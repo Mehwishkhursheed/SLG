@@ -1,0 +1,79 @@
+﻿@model IEnumerable<SLG.ViewModels.PurchaseViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseOrder.doc_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseOrder.cost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseOrder.create_date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseOrder.state)
+            </th>
+           
+            <th>
+                @Html.DisplayNameFor(model => model.PurchaseOrder.vendor)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PurchaseOrder.doc_name)
+                </td>
+                <td>
+                    @{
+                        @* @Html.DisplayFor(modelItem => item.PurchaseItems.Sum()) *@
+                        double total = 0;
+                        foreach (var line in item.PurchaseItems)
+                        {
+                            var subtotal = Convert.ToDouble(line.quantity) * Convert.ToDouble(line.price);
+                            total += subtotal;
+                        }
+                    }
+                    @total
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PurchaseOrder.create_date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PurchaseOrder.state)
+                </td>
+           
+                <td>
+                    @Html.DisplayFor(modelItem => item.PurchaseOrder.vendor.name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PurchaseOrder.purchase_id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.PurchaseOrder.purchase_id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PurchaseOrder.purchase_id">Delete</a>
+                    @if (item.PurchaseOrder.state == "RFQ" || item.PurchaseOrder.state == "RFQ Sent")
+                    {
+                        <p>| <a asp-action="ConfirmPurchaseOrder" asp-route-id="@item.PurchaseOrder.purchase_id">Confirm</a></p>
+                    }
+                    @if (item.PurchaseOrder.state == "Purchase Order")
+                    {
+                        <p>| <a asp-action="CreateBill" asp-route-id="@item.PurchaseOrder.purchase_id">Create Bill</a></p>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

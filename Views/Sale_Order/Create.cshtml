@@ -1,0 +1,111 @@
+﻿@using Microsoft.EntityFrameworkCore.Metadata.Internal;
+@using SLG.ViewModels
+@model SalesViewModel
+
+@using (Html.BeginForm("Create", "Sale_Order", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div>
+        <h4>Sale Order Information</h4>
+        <div class="row"></div>
+        <div class="form-group">
+            <label asp-for="SaleOrder.name" class="control-label"></label>
+            <input asp-for="SaleOrder.name" class="form-control" />
+            <span asp-validation-for="SaleOrder.name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SaleOrder.customer_id" class="control-label"></label>
+            @*<input asp-for="SaleOrder.customer_id" class="form-control" />*@
+            @Html.DropDownList("SaleOrder.customer_id", (SelectList)ViewData["customer_id"], "Select a customer", new { @class = "form-control" })
+            <span asp-validation-for="SaleOrder.customer_id" class="text-danger"></span>
+        </div>
+        
+    </div>
+
+    <div>
+        <div class="row">
+            <div class="col-9">
+                <h4>Line Items</h4>
+            </div>
+            <div class="col-3 text-right">
+                <button type="button" id="addLineItem" class="btn btn-primary">Add Line Item</button>
+            </div>
+        </div>
+        <br>
+
+        <table class="table table-bordered border-dark">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="lineItemsBody">
+                @for (int i = 0; i < Model.SaleItems.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.DropDownListFor(model => model.SaleItems[i].product_id, (SelectList)ViewData["product_id"], "Select a Product", new { @class = "form-control" })
+                            <span asp-validation-for="SaleItems[i].product_id" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input asp-for="SaleItems[i].quantity" min="0" class="form-control" />
+                            <span asp-validation-for="SaleItems[i].quantity" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input asp-for="SaleItems[i].price" min="0" class="form-control" />
+                            <span asp-validation-for="SaleItems[i].price"  class="text-danger"></span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger removeLineItem">Remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var index = @Model.SaleItems.Count;
+
+            $('#addLineItem').click(function () {
+                var newRow = '<tr>' +
+                    '<td><select class="form-control" name="SaleItems[' + index + '].product_id"><option value="">Select a Product</option></select></td>' +
+                    '<td><input class="form-control" name="SaleItems[' + index + '].quantity" min="0"/></td>' +
+                    '<td><input class="form-control" name="SaleItems[' + index + '].price" min="0"/></td>' +
+                    '<td><button type="button" class="btn btn-danger removeLineItem">Remove</button></td>' +
+                    '</tr>';
+
+                $('#lineItemsBody').append(newRow);
+
+                var select = $('select[name="SaleItems[' + index + '].product_id"]');
+                $.get('@Url.Action("GetProducts", "Products")', function (data) {
+                    select.empty();
+                    $.each(data, function (index, item) {
+                        select.append($('<option></option>').val(item.value).text(item.text));
+                    });
+                });
+
+                index++;
+            });
+
+            $(document).on('click', '.removeLineItem', function () {
+                $(this).closest('tr').remove();
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

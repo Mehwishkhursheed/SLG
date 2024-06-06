@@ -1,0 +1,88 @@
+﻿@*@model Sale_Order*@
+@model SLG.ViewModels.SalesViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Sale_Order</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SaleOrder.name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SaleOrder.name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SaleOrder.total_amount)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SaleOrder.total_amount)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SaleOrder.date_created)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SaleOrder.date_created)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SaleOrder.state)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SaleOrder.state)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SaleOrder.customer)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SaleOrder.customer.customer_id)
+        </dd>
+        
+    </dl>
+</div>
+<div>
+    <div>
+        
+        <table class="table table-bordered border-dark">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    @*<th>Action</th>*@
+                </tr>
+            </thead>
+            <tbody id="lineItemsBody">
+                @for (int i = 0; i < Model.SaleItems.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @*@Html.DropDownListFor(model => model.SaleItems[i].product_id, (SelectList)ViewData["product_id"], "Select a Product", new { @class = "form-control" })*@
+                            @*<span asp-validation-for="SaleItems[i].product_id" class="text-danger"></span>*@
+                            @Html.DisplayFor(model=> model.SaleItems[i].product.name)
+                        </td>
+                        <td>
+                            @*<input asp-for="SaleItems[i].quantity" class="form-control" />*@
+                            @*<span asp-validation-for="SaleItems[i].quantity" class="text-danger"></span>*@
+                            @Html.DisplayFor(model=> model.SaleItems[i].quantity)
+                        </td>
+                        <td>
+                            @*<input asp-for="SaleItems[i].price" class="form-control" />*@
+                            @*<span asp-validation-for="SaleItems[i].price" class="text-danger"></span>*@
+                            @Html.DisplayFor(model=> model.SaleItems[i].price)
+                        </td>
+                        @*<td>
+                            <button type="button" class="btn btn-danger removeLineItem">Remove</button>
+                        </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <a asp-action="Edit" asp-route-id="@Model?.SaleOrder.sale_id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
